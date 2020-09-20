@@ -1,4 +1,9 @@
-param ([string]$message)
+param (
+
+  [String[]] $message = 'Default Notification',
+  [String[]] $computername = "$env:COMPUTERNAME"
+)
+
 # Check if WinRM is running (required to send Toast machine-wide)
 $WinRMStatus=(Get-Service 'WinRM').Status
 
@@ -7,7 +12,7 @@ if ((Get-Service WinRM).Status -eq 'Stopped') {Start-Service 'WinRM' -ErrorActio
 
 # Show global toast notification
 if ((Get-Service WinRM).Status -eq 'Running') {
-     Invoke-Command -ComputerName $env:COMPUTERNAME -ArgumentList $message -ScriptBlock {param([string]$message) New-BurntToastNotification -Text "$message"}
+     Invoke-Command -ComputerName $computername -ArgumentList $message -ScriptBlock {param([string]$message) New-BurntToastNotification -Text "$message"}
    } else {
      Write-Host "** Can't send global Toast because WinRM service is not running." -Foreground Red
 	 }
